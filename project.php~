@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang = "en-US">
+	<head>
+		<meta charset = "UTF-8">
+		<title>Home</title>
+		<link rel = "stylesheet" type = "text/css"  href = "./css/home.css" />
+		<link rel = "stylesheet" type = "text/css"  href = "./css/extra.css" />
+
+	</head>
+	<body>
+		<div id="header">
+			<div class="topnav" id="myTopnav">
+				<div class="links">
+					<a href="#about">About</a>				
+					<a href="#forum">Forum</a>
+					<a href="#dashboard">Dashboard</a>
+					<a href="./home.html">Home</a>
+					
+				</div>
+				<div class="drop" id="main">
+					<a href="#" class="icon" onclick="openSideNav()">&#9776;</a>
+				</div> 
+				<a href="./profile.html">
+					<img src="./img/circle.png" alt = "Profile"/>
+				</a>
+				
+			</div>
+
+			<div id="mySidenav" class="sidenav">
+				<a href="javascript:void(0)" class="closebtn" onclick="closeSideNav()">&times;</a>
+				<img src="./img/circle.png" alt = "Profile"/>
+				<?php
+				$link = mysqli_connect("localhost", "root", "", "PROMAS_DB");        
+
+			        // Check connection
+			        if($link === false){
+			            die("ERROR: Could not connect. " . mysqli_connect_error());
+			        }
+
+				$sql = "SELECT name FROM students where username = ?";
+ 
+	            		if($stmt = mysqli_prepare($link, $sql))
+	            		{
+			        	// Bind variables to the prepared statement as parameters
+			        	mysqli_stmt_bind_param($stmt, "s", $username);
+			        	if(!isset($_SESSION['username']))
+	                		{
+	                			$message = "Please login first";
+                    				echo "<script type='text/javascript'>var conf = confirm('$message');</script>";  
+                    				echo "<script>setTimeout(\"location.href = '../login.html';\",1500);</script>";
+	                		}
+	                
+	                		$username = $_SESSION['username'];
+	                
+	                		mysqli_stmt_execute($stmt);
+	                		$result = mysqli_stmt_get_result($stmt);
+					$row = $result->fetch_assoc();
+					echo "<p>" . $row['name'] . "</p>";
+				}
+				?>
+				<a href="./profile.html">Profile</a>
+				<a href="#">Notifications</a>
+				<a href="./project.html">My Projects</a>
+				<a href="#">Progress</a>
+			</div>
+		</div>
+		<div id="content">
+			<div class="pageTitle">
+				<p>
+					My Projects
+				</p>
+			</div>
+			<p id="projectButton">
+					<button class="button createProj">Create New Project</button>
+					<br>
+					<br>
+					<div class="dropdown projdropdown">
+						<button class="button oldProj">My Projects</button>
+						<div class="projdropdown-content">
+							<?php
+							$link = mysqli_connect("localhost", "root", "", "PROMAS_DB");        
+
+							// Check connection
+							if($link === false){
+							    die("ERROR: Could not connect. " . mysqli_connect_error());
+							}
+
+							$sql = "SELECT TeamID FROM students where username = ?";
+			 				
+					    		if($stmt = mysqli_prepare($link, $sql))
+					    		{
+								// Bind variables to the prepared statement as parameters
+								mysqli_stmt_bind_param($stmt, "s", $username);
+								if(!isset($_SESSION['username']))
+								{
+									$message = "Please login first";
+					    				echo "<script type='text/javascript'>var conf = confirm('$message');</script>";  
+					    				echo "<script>setTimeout(\"location.href = '../login.html';\",1500);</script>";
+								}
+								$username = $_SESSION['username'];
+								
+								mysqli_stmt_execute($stmt);
+								$result = mysqli_stmt_get_result($stmt);
+								$row = $result->fetch_assoc();
+								$teamID = $row['TeamID'];
+								$teamSQL = "SELECT * FROM students where TeamID = ?";
+								if($stmt2 = mysqli_prepare($link, $teamSQL))
+					    			{
+									// Bind variables to the prepared statement as parameters
+									mysqli_stmt_bind_param($stmt2, "i", $teamID);
+									$teamID = $row['TeamID'];
+									$result = mysqli_stmt_get_result($stmt2);
+									$row = $result->fetch_assoc();
+									echo "<a href=\"#\">" . $row['ProjectID'] . "</a>";
+								
+							}
+							?>
+									<a href="#"></a>
+						    <a href="#">Link 2</a>
+						    <a href="#">Link 3</a>
+						</div>
+					</div>
+			</p>
+
+		</div>
+
+		<div class="footer">
+			<p id="copyright">
+				&#169Copyrights BMS College of Engineering
+			</p>
+			<p id="dept">
+				Dept. of ISE
+			</p>
+		</div>
+		<script type = "text/javascript" src="./js/home.js"></script>
+	</body>
+</html>
